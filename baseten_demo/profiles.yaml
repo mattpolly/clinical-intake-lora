@@ -1,0 +1,66 @@
+# Declarative Baseten demo deployment profiles.
+#
+# Field meanings (per current Baseten docs — see BASETEN_DOCS.md):
+#   model_id                    Weight source / model identifier (Hugging Face repo).
+#   served_model_name           vLLM `--served-model-name`; the `model` field in
+#                               OpenAI-compatible chat-completion requests.
+#   precision                   Numeric precision (fp16 default; latency > VRAM cost).
+#   quantization                Optional engine quantization mode; null = no quantization.
+#   gpu.class                   GPU family (A10G-class 24 GB for the default).
+#   gpu.instance_type           Exact Baseten instance SKU (see deployment/resources).
+#   gpu.vram_gb                 VRAM in gibibytes (informational).
+#   min_replicas / max_replicas Baseten autoscaling bounds (min_replica=0 enables
+#                               scale-to-zero). Documented field names are the
+#                               singular `min_replica`/`max_replica`; see the docs
+#                               note about this naming conflict in BASETEN_DOCS.md.
+#   idle_timeout_seconds        Idle scale-down delay (`scale_down_delay`) in seconds.
+#                               Validated to the closed [120, 300] range (2-5 min).
+#   autoscaling_window_seconds  Autoscaling traffic-averaging window.
+#   concurrency_target          Requests per replica before scaling up.
+#   adapters                    LoRA adapter slots (a list; aLoRA-compatible). Empty
+#                               by default: no 8B-matched adapter exists on this host.
+#   weights.source              BDN weight source (hf:// pinned SHA for reproducibility).
+#   weights.mount_location      Read-only mount inside the container.
+
+version: 1
+default: qwen3-8b-fp16
+
+profiles:
+  qwen3-8b-fp16:
+    model_id: Qwen/Qwen3-8B
+    served_model_name: Qwen/Qwen3-8B
+    precision: fp16
+    quantization: null
+    gpu:
+      class: A10G
+      instance_type: A10Gx8x32
+      vram_gb: 24
+    min_replicas: 0
+    max_replicas: 1
+    idle_timeout_seconds: 300
+    autoscaling_window_seconds: 60
+    concurrency_target: 1
+    adapters: []
+    weights:
+      source: "hf://Qwen/Qwen3-8B@b968826d9c46dd6066d109eabc6255188de91218"
+      mount_location: /models/qwen
+
+  qwen3-14b:
+    model_id: Qwen/Qwen3-14B
+    served_model_name: Qwen/Qwen3-14B
+    precision: fp16
+    quantization: null
+    gpu:
+      class: A100
+      instance_type: A100:12x144
+      vram_gb: 80
+    min_replicas: 0
+    max_replicas: 1
+    idle_timeout_seconds: 300
+    autoscaling_window_seconds: 60
+    concurrency_target: 1
+    adapters: []
+    weights:
+      # Pin a commit SHA at live benchmark time for reproducible 14B deploys.
+      source: "hf://Qwen/Qwen3-14B@main"
+      mount_location: /models/qwen14b

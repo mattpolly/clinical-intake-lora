@@ -126,6 +126,9 @@ scripts/
   chat.py                         Minimal local multi-turn terminal chat
   voice_proto/                    Headless voice-loop prototype (Polly, streaming
                                   Transcribe, mock/Baseten model, Rime TTS)
+  baseten_demo/                    On-demand Baseten demo deployment backend
+                                  (scale-to-zero Qwen3-8B profiles, server-side
+                                  wake/readiness/inference, cold-start events)
 
 docs/
   capability_dataset_schema.md    Compact, source-traceable data contract
@@ -216,5 +219,8 @@ Near-term work focuses on a dedicated, source-backed safety-gate curriculum,
 larger frozen progressive-disclosure benchmarks, and a cache-correctness/aLoRA
 latency prototype. The first headless voice-loop prototype (AWS Transcribe +
 pluggable Baseten model + Rime TTS) is documented in
-[docs/voice_prototype.md](docs/voice_prototype.md). Detailed acceptance
-criteria live in [TODO.md](TODO.md).
+[docs/voice_prototype.md](docs/voice_prototype.md). The on-demand Baseten demo
+deployment backend (scale-to-zero Qwen3-8B, server-side wake/readiness/
+inference, cold-start instrumentation) is documented in
+[docs/baseten-demo-deployment.md](docs/baseten-demo-deployment.md). Detailed
+acceptance criteria live in [TODO.md](TODO.md).
