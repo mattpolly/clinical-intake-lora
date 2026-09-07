@@ -77,7 +77,7 @@ See:
 - [Capability v4 safety review](docs/capability_v4_safety_review.md)
 - [Acuity transition probe](docs/acuity_transition_probe_v1.md)
 - [Acuity-mode curriculum](docs/acuity_mode_curriculum.md)
-- [aLoRA investigation TODO](TODO.md#6-investigate-activated-lora-alora-voice-latency-architecture)
+- [aLoRA investigation TODO](docs/TODO.md#6-investigate-activated-lora-alora-voice-latency-architecture)
 
 ## Architecture
 
@@ -240,4 +240,4 @@ pluggable Baseten model + Rime TTS) is documented in
 deployment backend (scale-to-zero Qwen3-8B, server-side wake/readiness/
 inference, cold-start instrumentation) is documented in
 [docs/baseten-demo-deployment.md](docs/baseten-demo-deployment.md). Detailed
-acceptance criteria live in [TODO.md](TODO.md).
+acceptance criteria live in [docs/TODO.md](docs/TODO.md).

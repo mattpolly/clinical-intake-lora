@@ -130,5 +130,5 @@ without explicit server-side credentials.
 4. **clinicalinterview.com demo page** calling this backend (UI is a separate
    slice; the backend seam is what a future "Start Demo" button calls).
 5. **aLoRA** base-KV-cache branching stays on the
-   [`TODO.md`](../TODO.md) aLoRA track; the adapter-slot list here is
+   [`TODO.md`](TODO.md) aLoRA track; the adapter-slot list here is
    deliberately aLoRA-compatible.

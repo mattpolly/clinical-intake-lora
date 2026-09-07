@@ -117,5 +117,5 @@ mock model turn OK; Rime correctly marked `missing-credential`; loop total
    interruption handling.
 4. Telephony (Amazon Connect or Telnyx voice) — requires explicit approval
    for phone-number spend and BAA confirmation.
-5. aLoRA cache-fork investigation remains on its own [TODO.md](../TODO.md)
+5. aLoRA cache-fork investigation remains on its own [TODO.md](TODO.md)
    track.
