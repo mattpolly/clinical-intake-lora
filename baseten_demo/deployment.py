@@ -150,6 +150,10 @@ def _start_command(profile: Profile) -> str:
     mount = profile.weights.mount_location if profile.weights else "/models/"
     return (
         f"vllm serve {mount} --served-model-name {profile.served_model_name} "
+        # Cap context length: vLLM's model default (40960 for Qwen3-8B) needs
+        # more KV cache than fp16 weights leave free on a 24 GiB GPU
+        # (deploy qkj5l7d failed on exactly this). 8192 covers intake dialogs.
+        f"--max-model-len {profile.max_model_len} "
         f"--host 0.0.0.0 --port 8000{quant_flags}"
     )
 

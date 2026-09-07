@@ -33,11 +33,18 @@ def test_config_yaml_has_no_build_or_redeploy_step():
     assert "/v1/chat/completions" == config["docker_server"]["predict_endpoint"]
 
 
-def test_default_resources_are_a10g_class_24gb():
+def test_default_resources_are_24gb_single_gpu():
     config = build_config_yaml(_default())
-    assert config["resources"]["accelerator"] == "A10G"
-    assert config["resources"]["instance_type"] == "A10Gx8x32"
+    # L4 is the org-supported A10G-class 24 GiB single GPU (A10G unavailable).
+    assert config["resources"]["accelerator"] == "L4"
+    assert config["resources"]["instance_type"] == "L4:4x16"
     assert config["resources"]["use_gpu"] is True
+
+
+def test_start_command_caps_context_to_fit_24gb_kv_cache():
+    command = build_config_yaml(_default())["docker_server"]["start_command"]
+    # vLLM's 40960 default needs more KV cache than fp16 weights leave free.
+    assert "--max-model-len 8192" in command
 
 
 def test_14b_profile_switches_definition_without_code_change():

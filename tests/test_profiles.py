@@ -18,9 +18,9 @@ def test_default_profile_matches_customer_decisions():
     assert default.model_id == "Qwen/Qwen3-8B"
     assert default.precision == "fp16"
     assert default.quantization is None
-    assert default.gpu.gpu_class == "A10G"
+    assert default.gpu.gpu_class == "L4"
     assert default.gpu.vram_gb == 24
-    assert default.instance_type == "A10Gx8x32"
+    assert default.instance_type == "L4:4x16"
     assert default.min_replicas == 0
     assert default.max_replicas == 1
     assert default.idle_timeout_seconds == 300
@@ -51,7 +51,7 @@ def _valid_profile(**overrides):
         "served_model_name": "Qwen/Qwen3-8B",
         "precision": "fp16",
         "quantization": None,
-        "gpu": {"class": "A10G", "instance_type": "A10Gx8x32", "vram_gb": 24},
+        "gpu": {"class": "L4", "instance_type": "L4:4x16", "vram_gb": 24},
         "min_replicas": 0,
         "max_replicas": 1,
         "idle_timeout_seconds": 300,

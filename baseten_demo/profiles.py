@@ -65,6 +65,7 @@ class Profile:
     idle_timeout_seconds: int
     autoscaling_window_seconds: int
     concurrency_target: int
+    max_model_len: int = 8192
     adapters: list[dict[str, Any]] = field(default_factory=list)
     weights: WeightsSpec | None = None
 
@@ -195,6 +196,16 @@ def validate_profile(name: str, data: dict[str, Any]) -> Profile:
     idle_timeout = _require_int(data, "idle_timeout_seconds", name)
     window = _require_int(data, "autoscaling_window_seconds", name)
     concurrency = _require_int(data, "concurrency_target", name)
+    max_model_len = data.get("max_model_len", 8192)
+    if isinstance(max_model_len, bool) or not isinstance(max_model_len, int):
+        raise ProfileValidationError(
+            f"profile {name!r}: max_model_len must be an integer, got {max_model_len!r}"
+        )
+    if not (1024 <= max_model_len <= 32768):
+        raise ProfileValidationError(
+            f"profile {name!r}: max_model_len {max_model_len} is outside the "
+            "closed [1024, 32768] range"
+        )
 
     if min_replicas < MIN_REPLICAS_MIN:
         raise ProfileValidationError(
@@ -236,6 +247,7 @@ def validate_profile(name: str, data: dict[str, Any]) -> Profile:
         idle_timeout_seconds=idle_timeout,
         autoscaling_window_seconds=window,
         concurrency_target=concurrency,
+        max_model_len=max_model_len,
         adapters=_validate_adapters(data.get("adapters"), name),
         weights=_validate_weights(data.get("weights"), name),
     )
