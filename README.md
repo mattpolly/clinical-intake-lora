@@ -124,12 +124,15 @@ scripts/
   train_qlora.py                  Run memory-conscious QLoRA training
   evaluate_*.py                   Behavioral, simulated-intake, and acuity probes
   chat.py                         Minimal local multi-turn terminal chat
+  voice_proto/                    Headless voice-loop prototype (Polly, streaming
+                                  Transcribe, mock/Baseten model, Rime TTS)
 
 docs/
   capability_dataset_schema.md    Compact, source-traceable data contract
   evaluation_protocol.md          Held-out behavioral evaluation protocol
   acuity_*.md                     Safety/transition research and benchmarks
   DEPLOYMENT.md                   Preliminary voice-serving cost model
+  voice_prototype.md              Headless voice-loop prototype (AWS + Rime)
 
 processed/                        Generated datasets (ignored by Git)
 outputs/                          Adapters and evaluation artifacts (ignored by Git)
@@ -211,4 +214,7 @@ and summary traces first.
 
 Near-term work focuses on a dedicated, source-backed safety-gate curriculum,
 larger frozen progressive-disclosure benchmarks, and a cache-correctness/aLoRA
-latency prototype. Detailed acceptance criteria live in [TODO.md](TODO.md).
+latency prototype. The first headless voice-loop prototype (AWS Transcribe +
+pluggable Baseten model + Rime TTS) is documented in
+[docs/voice_prototype.md](docs/voice_prototype.md). Detailed acceptance
+criteria live in [TODO.md](TODO.md).

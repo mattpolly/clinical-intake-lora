@@ -1,0 +1,61 @@
+{
+  "format": "agentic-devshop",
+  "version": 1,
+  "project": "clinicalinterview",
+  "models": {
+    "deepseek": {
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/deepseek-v4-pro-0813"
+    },
+    "glm": {
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/glm-5p3"
+    },
+    "kimi": {
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/kimi-k2p7-code"
+    },
+    "qwen": {
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/qwen3p7-plus"
+    },
+    "minimax": {
+      "provider": "fireworks",
+      "model": "accounts/fireworks/models/minimax-m3"
+    }
+  },
+  "roles": {
+    "lead": [
+      "glm"
+    ],
+    "spec-author": [
+      "deepseek"
+    ],
+    "spec-challenger": [
+      "qwen"
+    ],
+    "implementation": [
+      "deepseek"
+    ],
+    "evaluator": [
+      "kimi"
+    ]
+  },
+  "delivery": {
+    "medium": [
+      "implementation",
+      "evaluator"
+    ],
+    "large": [
+      "spec-challenger"
+    ],
+    "large_risk": [
+      "code-reviewer"
+    ]
+  },
+  "delegation": {
+    "max_session_tasks": 32,
+    "max_concurrent_workers": 4
+  },
+  "components": {}
+}
