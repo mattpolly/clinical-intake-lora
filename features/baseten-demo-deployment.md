@@ -214,6 +214,7 @@ Intake
 ## Implementation log
 
 - Feature created.
+- 2026-09-07: implement-local attempt 1 stopped at the spec-author receipt seam: role (deepseek) committed valid contract refinements (worktree commit 21553f9) but its final output was not parseable as the required JSON receipt, and the tool discarded the offending output (no evidence of its shape). Worktree/branch preserved non-destructively as change/baseten-demo-deployment-po-retry1 for diagnosis; devshop receipt-evidence repair planned before retry.
 
 ## Follow-ups
 
