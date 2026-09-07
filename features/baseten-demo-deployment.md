@@ -224,9 +224,11 @@ Assumptions to verify with the customer if wrong:
 ## Status
 
 Delivered (merged to main at 31588eb; lead-verified, evaluator deferred at
-customer direction for cost). Live Baseten deployment + real cold-start
-measurement remain the explicit follow-up execution step, pending customer
-go-ahead and a deployed model endpoint. Rime API key still missing.
+customer direction for cost). The live deployment now exists and the
+research-only text demo backend is implemented on `change/demo-backend`,
+pending local verification and integration. The one authorized cold-start
+attempt produced an unhealthy readiness probe, so no latency number is claimed
+and no retry is authorized implicitly.
 
 ## Implementation log
 
@@ -235,6 +237,8 @@ go-ahead and a deployed model endpoint. Rime API key still missing.
 - 2026-09-07: implement-local attempt 2: spec-author committed valid refinements (7924bb5) but prefixed its fenced JSON receipt with one line of prose ('The commit is complete... Here is my receipt.'), which the strict parser rejects. Evidence captured via the unmerged receipt-evidence repair (attempt-2 preserved as change/baseten-demo-deployment-po-retry2). Systematic model behavior, not a one-off: extending the repair to accept a fenced receipt embedded in prose, then retrying.
 - 2026-09-07: spec-author-refinement (this worktree): made the contract observable, bounded, and testable — pinned default precision to fp16, shipped a concrete `qwen3-14b` profile, fixed idle scale-down at default 300 s validated to the closed 120–300 s range, bounded readiness polling with a configurable deadline (default 600 s) and explicit timeout, and defined a machine-parseable instrumentation schema (canonical event identifiers + UTC timestamp, ≤4096 bytes per record). Feature-record lead decisions updated to match.
 - 2026-09-07: Delivered and merged to main (ff to 31588eb). Lead verification (all local, no model spend): 47/47 tests pass incl. secret scan; deployment definition builds with documented field names (min_replica=0, max_replica=1, scale_down_delay=300 in [120,300]); profiles.yaml carries qwen3-8b-fp16 default + qwen3-14b switchable + adapter-list (aLoRA-compatible); BASETEN_DOCS.md cites 24 doc URLs; dry-run emits complete wake->ready->infer->idle event trace (7 events, ttfb/duration recorded). Fixed one clear local defect: undeclared pyyaml dependency. Independent evaluator (kimi) not run - deferred at customer direction for cost; available on request. Spend tally (est.): planned ~100 / actual ~115 requests / waste ~40 (2 receipt-seam dead attempts + 1 avoidable re-score + excess polling) / accepted: yes (lead-verified).
+- 2026-09-07: Live state was verified `SCALED_TO_ZERO`; the single authorized wake was recorded in `outputs/baseten_demo/events_20260907T210642170Z.jsonl`. The foreground measurement did not complete, and a continuation of that same wake received an unhealthy-model HTTP 500 at the readiness probe. No second wake, inference retry, or extra polling was performed. Therefore no cold-start/TTFB/duration/idle number is asserted.
+- 2026-09-07: `change/demo-backend` adds a mock-tested FastAPI text service: non-blocking shared wake/readiness, explicit 503-before-ready behavior, bounded 40-turn/6,000-token in-memory sessions with timeout, lifecycle JSONL evidence that excludes patient text and secrets, plus server-only configuration and run/API documentation. Spend tally for this implementation slice: planned / actual / waste / accepted = 0 provider requests / 0 provider requests / 0 / yes (54 mocked tests pass).
 
 ## Follow-ups
 

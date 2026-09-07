@@ -163,6 +163,17 @@ class Harness:
     def wake_ready_probe(self) -> WakeReadyInferResult:
         """Full wake -> readiness (health + probe) -> first-token flow."""
         wake_event = self.wake()
+        return self.wait_ready_probe(wake_event)
+
+    def wait_ready_probe(self, wake_event: dict[str, Any]) -> WakeReadyInferResult:
+        """Complete readiness + probe after a caller has explicitly woken.
+
+        The HTTP service runs the wake and this bounded wait in one shared
+        worker, while its request path returns an immediate, auditable
+        ``waking`` state. Keeping the readiness/probe logic here prevents a
+        second lifecycle implementation from drifting away from the CLI
+        harness.
+        """
 
         deadline = time.monotonic() + self.config.readiness_deadline_seconds
         if not self._poll_ready(deadline):

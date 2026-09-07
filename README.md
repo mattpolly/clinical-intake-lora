@@ -55,6 +55,23 @@ mere recognition of obvious isolated emergency patterns—is the hard problem.
 The resulting architecture and data-design work are documented rather than
 promoted as a production safety feature.
 
+## Text demo backend
+
+The repository includes a research-only, text-first HTTP backend for a future
+demo UI. It keeps Baseten credentials on the server, wakes the on-demand model,
+reports readiness, and returns one concise non-diagnostic intake turn at a time.
+It accepts synthetic standardized-patient text only; never send PHI.
+
+```bash
+.venv/bin/python -m demo_service --env-file .env --host 127.0.0.1 --port 8000
+```
+
+The future UI calls `POST /demo/start`, polls `GET /demo/status/{session_id}`
+until it is ready, uses `POST /demo/turn/{session_id}` with
+`{"patient_text":"..."}`, then calls `POST /demo/end/{session_id}`. The full
+request/response contract, server-side environment values, and research
+disclaimer are in [Demo backend](docs/demo_backend.md).
+
 See:
 
 - [Capability v4 safety review](docs/capability_v4_safety_review.md)

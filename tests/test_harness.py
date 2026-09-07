@@ -128,3 +128,11 @@ def test_result_is_a_typed_struct():
         ),
         WakeReadyInferResult,
     )
+
+
+def test_service_can_wait_and_probe_after_an_explicit_wake(tmp_path):
+    harness, writer = _harness(tmp_path=tmp_path)
+    wake_event = harness.wake()
+    result = harness.wait_ready_probe(wake_event)
+    assert result.ok is True
+    assert [record["event"] for record in writer.read_records()][0] == "wake_requested"

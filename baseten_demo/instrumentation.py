@@ -32,6 +32,10 @@ CANONICAL_EVENTS = frozenset(
         "last_activity",
         "scaled_to_zero",
         "error",
+        "session_started",
+        "session_ready",
+        "turn_requested",
+        "session_ended",
     }
 )
 

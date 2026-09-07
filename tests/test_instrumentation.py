@@ -24,6 +24,10 @@ def test_canonical_event_vocabulary_is_fixed():
             "last_activity",
             "scaled_to_zero",
             "error",
+            "session_started",
+            "session_ready",
+            "turn_requested",
+            "session_ended",
         }
     )
 
