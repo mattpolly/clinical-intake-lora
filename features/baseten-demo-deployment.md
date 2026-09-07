@@ -223,7 +223,10 @@ Assumptions to verify with the customer if wrong:
 
 ## Status
 
-Intake
+Delivered (merged to main at 31588eb; lead-verified, evaluator deferred at
+customer direction for cost). Live Baseten deployment + real cold-start
+measurement remain the explicit follow-up execution step, pending customer
+go-ahead and a deployed model endpoint. Rime API key still missing.
 
 ## Implementation log
 
@@ -231,6 +234,7 @@ Intake
 - 2026-09-07: implement-local attempt 1 stopped at the spec-author receipt seam: role (deepseek) committed valid contract refinements (worktree commit 21553f9) but its final output was not parseable as the required JSON receipt, and the tool discarded the offending output (no evidence of its shape). Worktree/branch preserved non-destructively as change/baseten-demo-deployment-po-retry1 for diagnosis; devshop receipt-evidence repair planned before retry.
 - 2026-09-07: implement-local attempt 2: spec-author committed valid refinements (7924bb5) but prefixed its fenced JSON receipt with one line of prose ('The commit is complete... Here is my receipt.'), which the strict parser rejects. Evidence captured via the unmerged receipt-evidence repair (attempt-2 preserved as change/baseten-demo-deployment-po-retry2). Systematic model behavior, not a one-off: extending the repair to accept a fenced receipt embedded in prose, then retrying.
 - 2026-09-07: spec-author-refinement (this worktree): made the contract observable, bounded, and testable — pinned default precision to fp16, shipped a concrete `qwen3-14b` profile, fixed idle scale-down at default 300 s validated to the closed 120–300 s range, bounded readiness polling with a configurable deadline (default 600 s) and explicit timeout, and defined a machine-parseable instrumentation schema (canonical event identifiers + UTC timestamp, ≤4096 bytes per record). Feature-record lead decisions updated to match.
+- 2026-09-07: Delivered and merged to main (ff to 31588eb). Lead verification (all local, no model spend): 47/47 tests pass incl. secret scan; deployment definition builds with documented field names (min_replica=0, max_replica=1, scale_down_delay=300 in [120,300]); profiles.yaml carries qwen3-8b-fp16 default + qwen3-14b switchable + adapter-list (aLoRA-compatible); BASETEN_DOCS.md cites 24 doc URLs; dry-run emits complete wake->ready->infer->idle event trace (7 events, ttfb/duration recorded). Fixed one clear local defect: undeclared pyyaml dependency. Independent evaluator (kimi) not run - deferred at customer direction for cost; available on request. Spend tally (est.): planned ~100 / actual ~115 requests / waste ~40 (2 receipt-seam dead attempts + 1 avoidable re-score + excess polling) / accepted: yes (lead-verified).
 
 ## Follow-ups
 
