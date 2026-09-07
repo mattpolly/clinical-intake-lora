@@ -14,26 +14,39 @@ claims.
 ### Requirement: Declarative deployment profiles
 
 The deployment SHALL be defined by declarative profiles in a versioned config
-file. Each profile SHALL specify model id, quantization, GPU class,
-min/max replicas, idle scale-down timeout, and adapter slots (a list,
-possibly empty). Switching profiles (e.g. from Qwen3-8B to Qwen3-14B) SHALL
-require only a config change, not application redesign.
+file. Each profile SHALL specify model id, precision/quantization, GPU class,
+min/max replicas, idle scale-down timeout (integer seconds), and adapter
+slots (a list, possibly empty). The versioned config SHALL ship the default
+`qwen3-8b-fp16` profile AND a concrete `qwen3-14b` benchmark profile.
+Switching profiles (e.g. from Qwen3-8B to Qwen3-14B) SHALL require only a
+config change, not application redesign.
 
 #### Scenario: Default profile matches the customer decisions
-- **WHEN** the deployment definition is built from the default profile
-- **THEN** it targets Qwen3-8B, quantized appropriately for inference, on one
-  A10G-class 24 GB GPU, with min_replicas=0, max_replicas=1, and idle
-  scale-down configurable in the approximately 2–5 minute range
+- **WHEN** the deployment definition is built from the default
+  `qwen3-8b-fp16` profile
+- **THEN** it targets Qwen3-8B at fp16 precision (quantization configurable
+  per profile) on one A10G-class 24 GB GPU, with min_replicas=0,
+  max_replicas=1, and an idle scale-down timeout defaulting to 300 seconds
+  that is validated to stay within the closed 120–300 second range
+  (approximately 2–5 minutes)
 
-#### Scenario: Zero idle GPU cost
-- **WHEN** no demo session is active and the idle timeout elapses
-- **THEN** the deployment scales its replica count to zero and incurs no GPU
-  cost while scaled to zero
+#### Scenario: Zero idle GPU cost is configured
+- **WHEN** the deployment definition is built from the default profile
+- **THEN** it declares min_replicas=0 and an idle scale-down timeout within
+  the 120–300 second range, configuring Baseten to scale the replica count to
+  zero when no demo session is active and the timeout elapses (the actual
+  scale-down event is observed in the deferred live step)
 
 #### Scenario: Switching to a 14B benchmark profile
-- **WHEN** the 14B profile is selected in config
+- **WHEN** the shipped `qwen3-14b` profile is selected in config
 - **THEN** the deployment definition is produced for that profile without any
   application code change
+
+#### Scenario: Impossible or out-of-range autoscaling bounds are rejected
+- **WHEN** a profile specifies min_replicas greater than max_replicas or an
+  idle scale-down timeout outside the closed 120–300 second range
+- **THEN** profile loading rejects the configuration with an explicit
+  validation error and no deployment definition is produced
 
 ### Requirement: Documented Baseten interfaces only
 
@@ -63,10 +76,11 @@ adapter slots as a list, not a single adapter, so a later aLoRA
 (multiple-adapter, base-KV-cache) architecture requires no infrastructure
 redesign.
 
-#### Scenario: Wake never rebuilds
-- **WHEN** a replica is provisioned after scale-to-zero
-- **THEN** it loads the already-deployed model/adapter artifacts and performs
-  no model build or redeployment step
+#### Scenario: No build step in the deployment definition
+- **WHEN** the deployment definition and profile are inspected
+- **THEN** they reference pre-deployed model/adapter artifacts and contain no
+  build, package, or redeployment step, so a later wake only provisions/loads
+  a replica
 
 #### Scenario: Multiple adapter slots are representable
 - **WHEN** a profile declares more than one adapter slot

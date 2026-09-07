@@ -170,18 +170,32 @@ calls Baseten's wake mechanism), followed by readiness polling; the exact
 4. Cost guardrails: min=0/max=1 caps concurrent spend; the 2–5 min idle
    timeout bounds the tail; no spend alerting this slice — uptime events make
    cost computable after the fact.
-5. Profiles: one declarative config entry per profile (model id, quantization,
-   GPU class); default = Qwen3-8B fp16 (latency priority; fits 24 GB with KV
-   cache), quantization configurable; a 14B profile is added later without
-   code changes.
+5. Profiles: one declarative config entry per profile (model id,
+   precision/quantization, GPU class, idle timeout seconds). Default =
+   Qwen3-8B fp16 (latency priority; fits 24 GB with KV cache), idle
+   scale-down default 300 s validated to the closed 120–300 s range. A
+   concrete `qwen3-14b` benchmark profile ships in the same config file and
+   is switchable without code changes; live 14B benchmarking is a follow-up.
 6. No cold-start SLA is assumed or asserted — actuals are measured and
    recorded only.
 7. Failure behavior: errors are recorded as instrumentation events with
    explicit error states returned to the caller; at most one bounded retry;
+   readiness polling terminates in a bounded deadline (see decision 9);
    scale-to-zero observation is best-effort per documented interfaces.
 8. Credentials: `BASETEN_API_KEY` from the local `.env` (already provided);
    assume the account's default workspace with no existing-deployment
    constraints; the key is never committed, logged, or emitted in artifacts.
+9. Readiness polling is bounded: readiness must be confirmed within a
+   configurable deadline (default 600 s / 10 minutes); on deadline expiry
+   the backend stops polling, returns an explicit timeout error state, and
+   never polls indefinitely.
+10. Instrumentation schema: the JSON-lines artifact uses canonical event
+    identifiers `wake_requested`, `replica_ready`, `first_inference`,
+    `inference_result` (duration, time-to-first-token), `last_activity`,
+    `scaled_to_zero` (best-effort), and `error`; each line is a single
+    machine-parseable JSON object (stable `event` type + UTC `timestamp`,
+    ≤4096 bytes) so wake-to-ready, first-token latency, session length, and
+    idle interval are computable from the artifact alone.
 
 Assumptions to verify with the customer if wrong:
 
@@ -216,6 +230,7 @@ Intake
 - Feature created.
 - 2026-09-07: implement-local attempt 1 stopped at the spec-author receipt seam: role (deepseek) committed valid contract refinements (worktree commit 21553f9) but its final output was not parseable as the required JSON receipt, and the tool discarded the offending output (no evidence of its shape). Worktree/branch preserved non-destructively as change/baseten-demo-deployment-po-retry1 for diagnosis; devshop receipt-evidence repair planned before retry.
 - 2026-09-07: implement-local attempt 2: spec-author committed valid refinements (7924bb5) but prefixed its fenced JSON receipt with one line of prose ('The commit is complete... Here is my receipt.'), which the strict parser rejects. Evidence captured via the unmerged receipt-evidence repair (attempt-2 preserved as change/baseten-demo-deployment-po-retry2). Systematic model behavior, not a one-off: extending the repair to accept a fenced receipt embedded in prose, then retrying.
+- 2026-09-07: spec-author-refinement (this worktree): made the contract observable, bounded, and testable — pinned default precision to fp16, shipped a concrete `qwen3-14b` profile, fixed idle scale-down at default 300 s validated to the closed 120–300 s range, bounded readiness polling with a configurable deadline (default 600 s) and explicit timeout, and defined a machine-parseable instrumentation schema (canonical event identifiers + UTC timestamp, ≤4096 bytes per record). Feature-record lead decisions updated to match.
 
 ## Follow-ups
 

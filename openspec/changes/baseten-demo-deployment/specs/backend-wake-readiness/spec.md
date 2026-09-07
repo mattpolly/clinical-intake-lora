@@ -39,9 +39,11 @@ is satisfied AND one trivial inference probe succeeds.
 ### Requirement: Bounded failure behavior
 
 Transient failures during wake or readiness SHALL receive at most one bounded
-retry. Persistent failures SHALL surface as explicit error states to the
-caller with the failure recorded as an instrumentation event. The backend
-MUST NOT retry indefinitely or silently absorb errors.
+retry. Readiness polling SHALL terminate within a bounded, configurable
+deadline and MUST NOT poll indefinitely. Persistent failures SHALL surface as
+explicit error states to the caller with the failure recorded as an
+instrumentation event. The backend MUST NOT retry indefinitely or silently
+absorb errors.
 
 #### Scenario: Wake request fails transiently
 - **WHEN** a wake request fails with a transient error
@@ -52,6 +54,11 @@ MUST NOT retry indefinitely or silently absorb errors.
 - **WHEN** Baseten is unreachable or the deployment errors persistently
 - **THEN** the caller receives an explicit error state and an error
   instrumentation event is recorded
+
+#### Scenario: Replica never becomes ready
+- **WHEN** readiness is not confirmed within the configured deadline
+- **THEN** the backend stops polling and returns an explicit timeout error
+  state, and an error instrumentation event is recorded
 
 ### Requirement: Local invocability
 
