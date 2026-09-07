@@ -215,6 +215,7 @@ Intake
 
 - Feature created.
 - 2026-09-07: implement-local attempt 1 stopped at the spec-author receipt seam: role (deepseek) committed valid contract refinements (worktree commit 21553f9) but its final output was not parseable as the required JSON receipt, and the tool discarded the offending output (no evidence of its shape). Worktree/branch preserved non-destructively as change/baseten-demo-deployment-po-retry1 for diagnosis; devshop receipt-evidence repair planned before retry.
+- 2026-09-07: implement-local attempt 2: spec-author committed valid refinements (7924bb5) but prefixed its fenced JSON receipt with one line of prose ('The commit is complete... Here is my receipt.'), which the strict parser rejects. Evidence captured via the unmerged receipt-evidence repair (attempt-2 preserved as change/baseten-demo-deployment-po-retry2). Systematic model behavior, not a one-off: extending the repair to accept a fenced receipt embedded in prose, then retrying.
 
 ## Follow-ups
 
